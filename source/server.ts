@@ -4,6 +4,7 @@ import logging from './config/logging';
 import config from './config/config';
 import bodyParser from 'body-parser';
 // import bookRoutes from './routes/book';
+import sampleRoutes from './routes/sample';
 
 const NAMESPACE = 'Server';
 const router = express();
@@ -16,6 +17,8 @@ router.use((req, res, next) => {
     res.on('finish', () => {
         logging.info(NAMESPACE, `METHOD - [${req.method}], URL - [${req.url}], IP - [${req.socket.remoteAddress}], STATUS - [${req.statusCode}]`);
     });
+
+    next();
 });
 
 router.use(bodyParser.urlencoded({ extended: false }));
@@ -36,7 +39,7 @@ router.use((req, res, next) => {
 });
 
 /** Routes go here */
-// router.use('/books', bookRoutes);
+router.use('/sample', sampleRoutes);
 
 /** Error handling */
 router.use((req, res, next) => {
@@ -45,8 +48,11 @@ router.use((req, res, next) => {
     res.status(404).json({
         message: error.message
     });
+
+    next();
 });
 
+/** Create the Server */
 const httpServer = http.createServer(router);
 
 httpServer.listen(config.server.port, () => logging.info(NAMESPACE, `Server is running ${config.server.hostname}:${config.server.port}`));
