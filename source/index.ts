@@ -14,12 +14,24 @@ app.use(bodyParser.json());
 
 app.post('/todos', async (req, res) => {
     try {
-        console.log(req.body);
+        const { description } = req.body;
+        //$1 allows variables to be added to db?
+        const newTodo = await pool.query('INSERT INTO todo (description) VALUES($1) RETURNING *', [description]);
+        res.json(newTodo.rows[0]);
     } catch (err: any) {
         console.error(err.message);
     }
 });
 // get all TODOs
+
+app.get('/todos', async (req, res) => {
+    try {
+        const allTodos = await pool.query('SELECT * FROM todo');
+        res.json(allTodos.rows);
+    } catch (err: any) {
+        console.error(err.message);
+    }
+});
 
 // get TODO
 
